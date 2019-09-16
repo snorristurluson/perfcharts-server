@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class PerfdataConfig(AppConfig):
+class PerfDataConfig(AppConfig):
     name = 'perfdata'
