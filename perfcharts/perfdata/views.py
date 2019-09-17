@@ -130,7 +130,8 @@ class ChartDataList(generics.ListAPIView):
         results = Result.objects \
             .filter(executable=exe) \
             .filter(benchmark_id__in=benchmarks) \
-            .filter(metric_id__in=metrics)
+            .filter(metric_id__in=metrics) \
+            .order_by("date")
 
         by_sha = OrderedDict()
         revisions = {}
@@ -231,97 +232,3 @@ def save_result(result):
     else:
         r.date = datetime.datetime.now(datetime.timezone.utc)
     r.save()
-
-
-@api_view(['GET'])
-def get_chart_data(request, format=None):
-    exe_name = request.query_params["exe"]
-    repo_name = request.query_params["repo"]
-    branch_name = request.query_params["branch"]
-    benchmark_names=request.query_params.getlist("benchmark")
-    metric_names=request.query_params.getlist("metric")
-
-    repo = Repo.objects.get(name=repo_name)
-    exe = Executable.objects.get(name=exe_name, repo=repo)
-    branch = Branch.objects.get(name=branch_name, repo=repo)
-    benchmarks = Benchmark.objects.filter(name__in=benchmark_names).values("id")
-    metrics = Metric.objects.filter(name__in=metric_names).values("id")
-
-    results = Result.objects\
-        .filter(executable=exe)\
-        .filter(benchmark_id__in=benchmarks)\
-        .filter(metric_id__in=metrics)
-
-    by_sha = OrderedDict()
-    revisions = {}
-    for r in results:
-        sha = r.revision.commitid
-        revisions[sha] = r.revision
-        results_for_sha = by_sha.get(sha, [])
-
-        results_for_sha.append({
-            "value": r.value,
-            "benchmark": r.benchmark.name,
-            "metric": r.metric.name
-        })
-        by_sha[sha] = results_for_sha
-
-    data = []
-    for sha, results_for_sha in by_sha.items():
-        data.append({
-            "sha": sha,
-            "title": revisions[sha].title,
-            "author": revisions[sha].author,
-            "date": revisions[sha].date,
-            "results": results_for_sha
-        })
-
-    return Response(data)
-
-
-@api_view(['GET'])
-def get_chart_data2(request, *args, **kwargs):
-    exe_name = kwargs["exe"]
-    repo_name = kwargs["repo"]
-    branch_names = kwargs["branches"].split("|")
-    benchmark_names=kwargs["benchmarks"].split("|")
-    metric_names=kwargs["metrics"].split("|")
-
-    print(exe_name, repo_name, branch_names, benchmark_names, metric_names)
-
-    repo = Repo.objects.get(name=repo_name)
-    exe = Executable.objects.get(name=exe_name, repo=repo)
-    branches = Branch.objects.filter(name__in=branch_names, repo=repo).values("id")
-    benchmarks = Benchmark.objects.filter(name__in=benchmark_names).values("id")
-    metrics = Metric.objects.filter(name__in=metric_names).values("id")
-
-    results = Result.objects\
-        .filter(executable=exe)\
-        .filter(benchmark_id__in=benchmarks)\
-        .filter(metric_id__in=metrics)
-
-    by_sha = OrderedDict()
-    revisions = {}
-    for r in results:
-        sha = r.revision.commitid
-        revisions[sha] = r.revision
-        results_for_sha = by_sha.get(sha, [])
-
-        results_for_sha.append({
-            "value": r.value,
-            "benchmark": r.benchmark.name,
-            "metric": r.metric.name
-        })
-        by_sha[sha] = results_for_sha
-
-    data = []
-    for sha, results_for_sha in by_sha.items():
-        data.append({
-            "sha": sha,
-            "title": revisions[sha].title,
-            "author": revisions[sha].author,
-            "date": revisions[sha].date,
-            "results": results_for_sha
-        })
-
-    return Response(data)
