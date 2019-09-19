@@ -42,7 +42,7 @@ urlpatterns = [
     path('results/<int:pk>', ResultDetail.as_view(), name="result-detail"),
     path('result/', post_result, name='result'),
     path('revision/', post_revision, name='revision'),
-    path('chartdata/<str:exe>/<str:repo>/<str:branches>/<str:benchmarks>/<str:metrics>/', ChartDataList.as_view(), name='chart-data'),
+    path('chartdata/<str:exe>/<str:repo>/<str:branch>/<str:benchmarks>/<str:metrics>/', ChartDataList.as_view(), name='chart-data'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

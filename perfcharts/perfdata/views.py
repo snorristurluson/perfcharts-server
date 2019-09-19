@@ -115,20 +115,21 @@ class ChartDataList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         exe_name = kwargs["exe"]
         repo_name = kwargs["repo"]
-        branch_names = kwargs["branches"].split("|")
+        branch_name = kwargs["branch"]
         benchmark_names = kwargs["benchmarks"].split("|")
         metric_names = kwargs["metrics"].split("|")
 
-        print(exe_name, repo_name, branch_names, benchmark_names, metric_names)
+        print(exe_name, repo_name, branch_name, benchmark_names, metric_names)
 
         repo = Repo.objects.get(name=repo_name)
         exe = Executable.objects.get(name=exe_name, repo=repo)
-        branches = Branch.objects.filter(name__in=branch_names, repo=repo).values("id")
+        branch = Branch.objects.get(name=branch_name, repo=repo)
         benchmarks = Benchmark.objects.filter(name__in=benchmark_names).values("id")
         metrics = Metric.objects.filter(name__in=metric_names).values("id")
 
         results = Result.objects \
             .filter(executable=exe) \
+            .filter(revision__branch=branch) \
             .filter(benchmark_id__in=benchmarks) \
             .filter(metric_id__in=metrics) \
             .order_by("date")
