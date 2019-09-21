@@ -43,6 +43,7 @@ urlpatterns = [
     path('result/', post_result, name='result'),
     path('revision/', post_revision, name='revision'),
     path('chartdata/<str:exe>/<str:repo>/<str:branch>/<str:benchmarks>/<str:metrics>/', ChartDataList.as_view(), name='chart-data'),
+    path('comparebranches/<str:branches>', BranchCompareList.as_view(), name='compare-branches'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

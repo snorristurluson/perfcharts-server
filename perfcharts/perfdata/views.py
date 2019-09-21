@@ -161,6 +161,31 @@ class ChartDataList(generics.ListAPIView):
         return Response(data)
 
 
+class BranchCompareList(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        branch_names = kwargs["branches"].split("|")
+        branch_ids = Branch.objects.filter(name__in=branch_names).values("id")
+        print(branch_ids)
+
+        # There may be a better way to do this, but for now I'm doing multiple queries.
+        # Get the latest commit per branch, then get all results for that commit
+        latest_commits = {}
+        for branch in branch_names:
+            results = Result.objects.filter(revision__branch__name=branch).order_by("-date")
+            latest_commits[branch] = results[0].revision.commitid
+
+        combined_results = []
+        for branch, commit in latest_commits.items():
+            results = Result.objects.filter(revision__commitid=commit)
+            per_branch = {
+                "branch": branch,
+                "sha": commit,
+                "results": [{"value": x.value, "benchmark": x.benchmark.name, "metric": x.metric.name} for x in results]
+            }
+            combined_results.append(per_branch)
+        return Response(combined_results)
+
+
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
