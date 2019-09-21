@@ -163,26 +163,38 @@ class ChartDataList(generics.ListAPIView):
 
 class BranchCompareList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
+        exe_name = kwargs["exe"]
+        repo_name = kwargs["repo"]
         branch_names = kwargs["branches"].split("|")
-        branch_ids = Branch.objects.filter(name__in=branch_names).values("id")
-        print(branch_ids)
+        benchmark_names = kwargs["benchmarks"].split("|")
+        metric_names = kwargs["metrics"].split("|")
+
+        repo = Repo.objects.get(name=repo_name)
+        exe = Executable.objects.get(name=exe_name, repo=repo)
+        benchmarks = Benchmark.objects.filter(name__in=benchmark_names).values("id")
+        metrics = Metric.objects.filter(name__in=metric_names).values("id")
 
         # There may be a better way to do this, but for now I'm doing multiple queries.
         # Get the latest commit per branch, then get all results for that commit
         latest_commits = {}
         for branch in branch_names:
-            results = Result.objects.filter(revision__branch__name=branch).order_by("-date")
+            results = Result.objects.filter(executable=exe).filter(revision__branch__name=branch).order_by("-date")
             latest_commits[branch] = results[0].revision.commitid
 
         combined_results = []
         for branch, commit in latest_commits.items():
-            results = Result.objects.filter(revision__commitid=commit)
+            results = Result.objects \
+                .filter(revision__commitid=commit) \
+                .filter(benchmark_id__in=benchmarks) \
+                .filter(metric_id__in=metrics)
             per_branch = {
                 "branch": branch,
                 "sha": commit,
                 "results": [{"value": x.value, "benchmark": x.benchmark.name, "metric": x.metric.name} for x in results]
             }
             combined_results.append(per_branch)
+
+        print(combined_results)
         return Response(combined_results)
 
 
