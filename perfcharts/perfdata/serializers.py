@@ -49,5 +49,5 @@ class EnvironmentSerializer(serializers.ModelSerializer):
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
-        fields = ["value", "std_dev", "val_min", "val_max", "q1", "q3", "date", "revision", "executable",
+        fields = ["value", "date", "revision", "executable",
                   "benchmark", "metric", "environment"]
