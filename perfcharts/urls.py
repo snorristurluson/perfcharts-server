@@ -43,6 +43,7 @@ urlpatterns = [
     path('result/', post_result, name='result'),
     path('revision/', post_revision, name='revision'),
     path('chartdata/<str:exe>/<str:repo>/<str:branch>/<str:benchmarks>/<str:metrics>/', ChartDataList.as_view(), name='chart-data'),
+    path('refdata/<str:exe>/<str:repo>/<str:revision>', RefDataList.as_view(), name='ref-data'),
     path('comparebranches/<str:exe>/<str:repo>/<str:branches>/<str:benchmarks>/<str:metrics>/', BranchCompareList.as_view(), name='compare-branches'),
 ]
 

@@ -161,6 +161,43 @@ class ChartDataList(generics.ListAPIView):
         return Response(data)
 
 
+class RefDataList(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        exe_name = kwargs["exe"]
+        repo_name = kwargs["repo"]
+        revision_name = kwargs["revision"]
+
+        print(exe_name, repo_name, revision_name)
+
+        repo = Repo.objects.get(name=repo_name)
+        exe = Executable.objects.get(name=exe_name, repo=repo)
+        revision = Revision.objects.filter(commitid=revision_name)[0]
+
+        query_results = Result.objects \
+            .filter(executable=exe) \
+            .filter(executable=exe) \
+            .filter(revision=revision)
+
+        results = []
+
+        for r in query_results:
+            results.append({
+                "value": r.value,
+                "benchmark": r.benchmark.name,
+                "metric": r.metric.name
+            })
+
+        data = {
+            "commitid": revision.commitid,
+            "title": revision.title,
+            "author": revision.author,
+            "date": revision.date,
+            "results": results
+        }
+
+        return Response(data)
+
+
 class BranchCompareList(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         exe_name = kwargs["exe"]

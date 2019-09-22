@@ -18,7 +18,7 @@ class BranchSerializer(serializers.ModelSerializer):
 class RevisionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Revision
-        fields = ["commitid", "tag", "date", "title", "message", "repo", "author", "branch"]
+        fields = ["commitid", "tag", "date", "title", "message", "author", "branch"]
 
 
 class ExecutableSerializer(serializers.ModelSerializer):
