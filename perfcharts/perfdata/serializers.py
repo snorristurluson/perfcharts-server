@@ -31,7 +31,7 @@ class ExecutableSerializer(serializers.ModelSerializer):
 class BenchmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Benchmark
-        fields = ["name", "description"]
+        fields = ["name", "description", "executable", "checksum", "reference"]
 
 
 class MetricSerializer(serializers.ModelSerializer):
