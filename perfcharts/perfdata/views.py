@@ -306,4 +306,5 @@ def save_result(result):
         r.date = revision.date
     else:
         r.date = datetime.datetime.now(datetime.timezone.utc)
+    r.checksum = result["checksum"]
     r.save()

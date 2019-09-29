@@ -50,4 +50,4 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Result
         fields = ["value", "date", "revision", "executable",
-                  "benchmark", "metric", "environment"]
+                  "benchmark", "metric", "environment", "checksum"]

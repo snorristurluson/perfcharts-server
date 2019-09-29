@@ -97,6 +97,7 @@ class Result(models.Model):
     benchmark = models.ForeignKey(Benchmark, on_delete=models.CASCADE, related_name="results")
     metric = models.ForeignKey(Metric, on_delete=models.CASCADE, related_name="results")
     environment = models.ForeignKey(Environment, on_delete=models.CASCADE, related_name="results")
+    checksum = models.CharField(max_length=40, blank=True, null=True)
 
     def __str__(self):
         return u"%s - %s: %s" % (self.benchmark.name, self.metric, self.value)
