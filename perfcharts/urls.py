@@ -34,6 +34,7 @@ urlpatterns = [
     path('executables/<str:repo>', ExecutableForRepoList.as_view(), name="executable-repo-list"),
     path('benchmarks/', BenchmarkList.as_view(), name="benchmark-list"),
     path('benchmarks/<int:pk>', BenchmarkDetail.as_view(), name="benchmark-detail"),
+    path('benchmarks/<str:exe>/<str:repo>', BenchmarksForExecutable.as_view(), name="benchmark-exe-list"),
     path('metrics/', MetricList.as_view(), name="metric-list"),
     path('metrics/<int:pk>', MetricDetail.as_view(), name="metric-detail"),
     path('environments/', EnvironmentList.as_view(), name="environment-list"),

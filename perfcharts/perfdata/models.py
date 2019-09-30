@@ -61,8 +61,8 @@ class Executable(models.Model):
 class Benchmark(models.Model):
     name = models.CharField(max_length=100)
     executable = models.ForeignKey(Executable, on_delete=models.CASCADE, related_name="benchmarks")
-    description = models.CharField(max_length=300, blank=True)
-    checksum = models.CharField(max_length=40, blank=True)
+    description = models.CharField(max_length=300, null=True, blank=True)
+    checksum = models.CharField(max_length=40, null=True, blank=True)
     reference = models.ForeignKey(Revision, on_delete=models.SET_NULL, null=True, related_name="benchmarks")
 
     class Meta:

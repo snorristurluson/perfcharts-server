@@ -81,6 +81,16 @@ class BenchmarkDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BenchmarkSerializer
 
 
+class BenchmarksForExecutable(generics.ListAPIView):
+    serializer_class = BenchmarkSerializer
+
+    def get_queryset(self):
+        repo = Repo.objects.get(name=self.kwargs["repo"])
+        exe = Executable.objects.get(name=self.kwargs["exe"], repo=repo)
+        qs = Benchmark.objects.filter(executable=exe)
+        return qs
+
+
 class MetricList(generics.ListCreateAPIView):
     queryset = Metric.objects.all()
     serializer_class = MetricSerializer
@@ -291,7 +301,7 @@ def save_result(result):
     branch, _ = Branch.objects.get_or_create(name=result["branch"], repo=repo)
     exe, _ = Executable.objects.get_or_create(name=result["executable"], repo=repo)
     env, _ = Environment.objects.get_or_create(name=result["environment"])
-    benchmark, _ = Benchmark.objects.get_or_create(name=result["benchmark"])
+    benchmark, _ = Benchmark.objects.get_or_create(name=result["benchmark"], executable=exe)
     metric, _ = Metric.objects.get_or_create(name=result["metric"])
     revision, _ = Revision.objects.get_or_create(commitid=result["commitid"], branch=branch)
     try:
